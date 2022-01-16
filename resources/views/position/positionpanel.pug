@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        style 
+            include ../style.css
+            include ./position.css
+        script 
+            include ./controller.js
+    body
+        div(class="panel background-bright")
+            div(class="position-panel background-dark")
+                div(class="position-display flex-max background-dark")
+                    h1#position(class="font-bright") -
+                div#class-display
+                    span#class(class="font-bright font-m font-bold") n.a.
+            div(class="driver-panel flex-max")
+                div(class="flex-max driver-name-display")
+                    div 
+                        div
+                            span#car-number(class="font-dark font-l font-bold") ---#
+                            span#current-driver(class="font-dark font-l font-bold") n.a.
+                        div 
+                            span#team-name(class="font-m") n.a.
+                div#add-info-display(class="car-display background-dark")
+                    span#car-name(class="font-bright font-s font-bold") n.a.
+            

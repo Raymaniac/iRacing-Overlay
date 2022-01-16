@@ -1,0 +1,57 @@
+.panel {
+    width: 420px;
+    height: 160px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-content: center;
+}
+
+.weather-display {
+    width: 160px;
+}
+
+.conditions-display {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+#weather-type {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100px;
+}
+
+#weather-image {
+    width: 60px;
+    height: 60px;
+}
+
+.column {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.track-name-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100px;
+}
+
+.session-display {
+    padding-top: 5px;
+}
+
+#session-length {
+    margin-left: 5px;
+}

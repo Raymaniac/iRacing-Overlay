@@ -1,0 +1,31 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        style 
+            include ../style.css
+            include ./weather.css
+        script 
+            include ./controller.js
+    body
+        div(class="panel background-bright")
+            div(class="weather-display")
+                div#weather-type(class="flex-max")
+                    img#weather-image(src="http://localhost:8080/images/OtherWeathers.png")
+                div#conditions(height="60px" class="conditions-display")
+                    div#air-temp-column(class="font-s column")
+                        span#air-temp
+                        span Air
+                    div#track-temp-column(class="font-s column")
+                        span#track-temp 
+                        span Track
+                    
+            div(class="flex-max")
+                div(class="track-name-display")
+                    span#track-name(class="font-dark font-bold")
+                    span#track-config(class="font-dark")
+                div(class="session-display")
+                    span#session-type(class="font-s font-bold") Practice
+                    span#session-length(class="font-s") 30min

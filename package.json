@@ -1,0 +1,19 @@
+{
+  "name": "iracing-overlay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "dotenv": "^11.0.0",
+    "express": "^4.17.2",
+    "express-body-parser-error-handler": "^1.0.3",
+    "node-irsdk": "git+https://github.com/sabifa/node-irsdk.git",
+    "pug": "^3.0.2"
+  }
+}

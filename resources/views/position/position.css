@@ -1,0 +1,64 @@
+.panel {
+    width: 420px;
+    height: 160px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-content: center;
+}
+
+.position-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: center;
+    width: 100px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: rgb(50, 50, 202);
+}
+
+.position-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#position {
+    text-align: center;
+    margin: 0;
+}
+
+#class-display {
+    height: 25px;
+    display: flex;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#class {
+    width: 100%;
+}
+
+.driver-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-display {
+    height: 25px;
+    padding-left: 20px;
+}
+
+.driver-name-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+}

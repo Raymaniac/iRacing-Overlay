@@ -1,0 +1,12 @@
+.panel {
+    width: 150px;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
