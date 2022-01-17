@@ -1,0 +1,23 @@
+{
+    "5": {
+        "Name": "Sunrise"
+    },
+    "1": {
+        "Name": "Morning"
+    },
+    "9": {
+        "Name": "Noon"
+    },
+    "0": {
+        "Name": "Afternoon"
+    },
+    "2": {
+        "Name": "Late Afternoon"
+    },
+    "8": {
+        "Name": "Sunset"
+    },
+    "3": {
+        "Name": "Night"
+    }
+}

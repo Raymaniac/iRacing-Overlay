@@ -1,6 +1,7 @@
 const irsdk = require("node-irsdk");
 const fs = require("fs");
 const { time } = require("console");
+const { env } = require("process");
 
 class SDKWrapper {
 
@@ -41,6 +42,7 @@ class SDKWrapper {
             let date = Date.now();
             let fileName = `./samples/${date.toString()}_session.json`;
             fs.writeFileSync(fileName, JSON.stringify(sessionData));
+            this._dataSaved = true;
         }
         this._sessionData.TrackName = sessionData.data.WeekendInfo.TrackDisplayName;
         this._sessionData.TrackConfig = sessionData.data.WeekendInfo.TrackConfigName;
@@ -130,6 +132,7 @@ class SDKWrapper {
                 Session: this._sessionData.SessionType,
                 SessionLength: this._sessionData.SessionLength,
                 Weather: this._sessionData.CurrentWeather,
+                DayTime: this._sessionData.CurrentDayTime,
                 AirTemp: this._sessionData.AirTemp,
                 TrackTemp: this._sessionData.TrackTemp
             };
@@ -140,6 +143,7 @@ class SDKWrapper {
                 TrackLength: "42 km",
                 Session: "Practice",
                 Weather: "None",
+                DayTime: "Afternoon",
                 AirTemp: "24°C",
                 TrackTemp: "34°C"
             };
@@ -230,6 +234,7 @@ class SessionData {
     SessionType = "";
     SessionLength = "";
     CurrentWeather = "";    // from "TrackSkies"
+    CurrentDayTime = "Not Night";
     TrackTemp = "";         // from "TrackSurfaceTemp"
     AirTemp = "";           // from "TrackAirTemp"
 }
@@ -262,11 +267,19 @@ class ClassHandler {
     }
 
     static getClassName(classID) {
-        return this._data[classID].Name;
+        try {
+            return this._data[classID].Name;
+        }catch {
+            return "N.a.";
+        }
     }
 
-    static getClassColor(classID) {
-        return this._data[classID].Color;
+    static getClassColor(classID) { 
+        try {
+            return this._data[classID].Color;
+        }catch {
+            return process.env.CLASS_DEFAULT_COLOR;
+        }
     }
 }
 

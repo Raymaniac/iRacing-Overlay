@@ -1,0 +1,14 @@
+{
+    "0": {
+        "Name": "Clear"
+    },
+    "1": {
+        "Name": "Partly Cloudy"
+    },
+    "2": {
+        "Name": "Mostly Cloudy"
+    },
+    "3": {
+        "Name": "Overcast"
+    }
+}
