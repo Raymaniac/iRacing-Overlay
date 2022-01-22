@@ -13,6 +13,7 @@
     "dotenv": "^11.0.0",
     "express": "^4.17.2",
     "express-body-parser-error-handler": "^1.0.3",
+    "moment": "^2.29.1",
     "node-irsdk": "git+https://github.com/sabifa/node-irsdk.git",
     "pug": "^3.0.2",
     "sqlite3": "^5.0.2"

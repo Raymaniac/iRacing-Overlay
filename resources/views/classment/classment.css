@@ -1,0 +1,33 @@
+.classment-panel {
+    width: 100px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.panel-header {
+    background-color: black;
+    color: whitesmoke;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+}
+
+.position-item {
+    width: 100%;
+    height: 40px;
+}
+
+.position-number {
+    width: 35px;
+}
+
+.class-color-panel {
+    width: 10px;
+}
+
+.driver-short {
+    width: auto;
+}

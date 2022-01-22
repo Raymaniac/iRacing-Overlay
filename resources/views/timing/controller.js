@@ -3,6 +3,7 @@ class WidgetController {
     
     _timeDisplay;
     _flagPanel;
+    _flagText;
     _flagOpened = false;
     _intervall = null;
 
@@ -16,7 +17,7 @@ class WidgetController {
         this._timingType = params.get("type");
         this._timeDisplay = document.getElementById("time-display");
         this._flagPanel = document.getElementById("flag-panel");
-     
+        this._flagText = document.getElementById("flag-text");
         this._fetchUpdate();
     }
 
@@ -44,18 +45,22 @@ class WidgetController {
 
     _displayValues(data) {
         if(!this._flagOpened) {
-            if(data.FlagStatus === "Green") {
+            if(data.FlagStatus === "Green" || data.FlagStatus === "GreenHeld") {
                 this._flagOpened = true;
+                this._flagText.innerText = "Green";
                 this._flagPanel.classList.add("flag-green");
-            }else if(data.FlagStatus === "Yellow") {
+            }else if(data.FlagStatus === "YellowWaving") {
                 this._flagOpened = true;
+                this._flagText.innerHTML = "Caution";
                 this._flagPanel.classList.add("flag-caution");
-            }else if(data.FlagStatus === "WhiteFlag") {
+            }else if(data.FlagStatus === "White") {
                 this._flagOpened = true;
+                this._flagText = "Last Lap";
                 this._flagPanel.classList.add("flag-lastlap");
             }
 
             if(this._flagOpened) {
+                this._flagPanel.classList.toggle("flag-hidden");
                 setTimeout(this._clearFlagStatus.bind(this), 2000);
             }
         }

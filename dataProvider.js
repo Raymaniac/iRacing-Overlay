@@ -1,9 +1,13 @@
 const irsdk = require("node-irsdk");
 const fs = require("fs");
+const classmentApi = require("./classmentAPI.js");
+const moment = require("moment");
 
 class SDKWrapper {
 
     _replaceID = 208718;
+
+    _classment;
 
     _instance = null;
     _sessionData = new SessionData();
@@ -25,6 +29,7 @@ class SDKWrapper {
 
     init() {
         ClassHandler.loadData("./config/Classes.json");
+        SkiesHandler.loadData("./config/Skies.json");
         if(this._instance === null) {
             this._instance = irsdk.init({sessionInfoUpdateInterval: process.env.SESSION_INFO_UPDATE_INTERVAL});
             this._instance.on("SessionInfo", this._onSessionData.bind(this));
@@ -47,9 +52,7 @@ class SDKWrapper {
         this._sessionData.TrackName = sessionData.data.WeekendInfo.TrackDisplayName;
         this._sessionData.TrackConfig = sessionData.data.WeekendInfo.TrackConfigName;
         this._sessionData.TrackLength = sessionData.data.WeekendInfo.TrackLength;
-        this._sessionData.CurrentWeather = sessionData.data.WeekendInfo.TrackSkies;
-        this._sessionData.TrackTemp = sessionData.data.WeekendInfo.TrackSurfaceTemp;
-        this._sessionData.AirTemp = sessionData.data.WeekendInfo.TrackAirTemp;
+        //this._sessionData.CurrentWeather = sessionData.data.WeekendInfo.TrackSkies;
         // Evaluate current session and session type
         let sessionKeys = Object.keys(sessionData.data.SessionInfo.Sessions);
         for(let i = 0; i < sessionKeys.length; i++) {
@@ -109,7 +112,13 @@ class SDKWrapper {
         this._positionData.IsInGarage = !telemetry.values.IsOnTrack;
         this._sessionData.IsInGarage = !telemetry.values.IsOnTrack;
 
-        this._timingData.FlagStatus = telemetry.values.SessionFlags[0]; // First flag should be main priority
+        this._sessionData.TrackTemp = telemetry.values.TrackTemp;
+        this._sessionData.AirTemp = telemetry.values.AirTemp;
+        this._sessionData.CurrentWeather = SkiesHandler.getSkyName(telemetry.values.Skies);
+
+        let flags = telemetry.values.SessionFlags;
+        this._timingData.FlagStatus = flags[0];
+        //this._timingData.FlagStatus = flags[flags.length-1]; // Last flag should be main priority
         this._updateSessionFlags(telemetry.values.SessionFlags);
 
         let driverPosition = telemetry.values.CarIdxPosition[this._driverCarIndex];
@@ -141,8 +150,8 @@ class SDKWrapper {
                 SessionLength: this._sessionData.SessionLength,
                 Weather: this._sessionData.CurrentWeather,
                 DayTime: this._sessionData.CurrentDayTime,
-                AirTemp: this._sessionData.AirTemp,
-                TrackTemp: this._sessionData.TrackTemp,
+                AirTemp: this._sessionData.AirTemp.toFixed(1),
+                TrackTemp: this._sessionData.TrackTemp.toFixed(1),
                 IsOnPitroad: this._sessionData.IsOnPitroad,
                 IsInGarage: this._sessionData.IsInGarage
             };
@@ -231,19 +240,15 @@ class SDKWrapper {
     }
 
     _getTimeString(timeSec) {
-        let secFloat;
-        if(typeof timeSec === "string") {
-            secFloat = parseFloat(timeSec.split(" ")[0]);
-        }else {
-            secFloat = timeSec;
-        }
+        let dateTime = moment.utc(timeSec*1000);
 
-        let minutes = Math.floor(secFloat / 60);
-        let hours = Math.floor(Number((secFloat / 60 / 60)));
-        let seconds = secFloat - ( minutes * 60 );
-        seconds = Number(seconds.toFixed(0));
+        let hours = dateTime.hours();
+        let minutes = dateTime.minutes();
+        let seconds = dateTime.seconds();
+
         return `${
             hours < 10 ? "0" + hours : hours}:${ minutes < 10 ? "0" + minutes : minutes }:${ seconds < 10 ? "0" + seconds : seconds }h`;
+
     }
 
     _updateSessionFlags(sessionFlags) {
@@ -331,6 +336,19 @@ class ClassHandler {
         }catch {
             return process.env.CLASS_DEFAULT_COLOR;
         }
+    }
+}
+
+class SkiesHandler {
+    static _data = null;
+
+    static loadData(path) {
+        let stringData = fs.readFileSync(path);
+        this._data = JSON.parse(stringData);
+    }
+
+    static getSkyName(skyID) {
+        return this._data[skyID].Name;
     }
 }
 
