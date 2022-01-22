@@ -1,5 +1,7 @@
 class WidgetController {
     IMG_BASE_PATH = location.origin + "/resources/images";
+
+    _body;
     
     _trackName;
     _trackConfig;
@@ -15,6 +17,7 @@ class WidgetController {
     _lastdaylightCondition = "";
 
     constructor() {
+        this._body = document.getElementById("body");
         this._trackName = document.getElementById("track-name");
         this._trackConfig = document.getElementById("track-config");
         this._weatherImage = document.getElementById("weather-image");
@@ -35,7 +38,7 @@ class WidgetController {
                     let decoded = decodeURI(stringText);
                     this._displayValues(JSON.parse(decoded));
                     if(this._intervall === null) {
-                      this._intervall = setInterval(this._fetchUpdate.bind(this), 5000);
+                      this._intervall = setInterval(this._fetchUpdate.bind(this), 500);
                     }
                 }
             };
@@ -48,22 +51,28 @@ class WidgetController {
     }
 
     _displayValues(data) {
-        this._trackName.innerText = data.TrackName;
-        this._trackConfig.innerText = `${data.TrackConfig} (${data.TrackLength})`;
-        this._airTemp.innerText = data.AirTemp;
-        this._trackTemp.innerText = data.TrackTemp;
-        try {
-            let sessionLength = data.SessionLength;
-            let timeInMinutes = parseFloat(sessionLength.split(" ")[0]) / 60;
-            let timeUnit = sessionLength.split(" ")[1] === "sec" ? "min" : "Laps";
-            this._sessionLength.innerText = `${ timeInMinutes }${timeUnit}`;
-        } catch {}
-        this._sessionType.innerText = data.Session;
 
-        if(this._lastWeatherCondition !== data.Weather || this._lastdaylightCondition !== data.DayTime) {
-            this._weatherImage.src = this._getWeatherIconSource(data.DayTime, data.Weather);
-            this._lastWeatherCondition = data.Weather;
-            this._lastdaylightCondition = data.DayTime;
+        if(!data.IsInGarage) {
+            this._body.style.visibility = "hidden";
+        }else {
+            this._body.style.visibility = "visible";
+            this._trackName.innerText = data.TrackName;
+            this._trackConfig.innerText = `${data.TrackConfig} (${data.TrackLength})`;
+            this._airTemp.innerText = data.AirTemp;
+            this._trackTemp.innerText = data.TrackTemp;
+            try {
+                let sessionLength = data.SessionLength;
+                let timeInMinutes = parseFloat(sessionLength.split(" ")[0]) / 60;
+                let timeUnit = sessionLength.split(" ")[1] === "sec" ? "min" : "Laps";
+                this._sessionLength.innerText = `${ timeInMinutes }${timeUnit}`;
+            } catch {}
+            this._sessionType.innerText = data.Session;
+
+            if(this._lastWeatherCondition !== data.Weather || this._lastdaylightCondition !== data.DayTime) {
+                this._weatherImage.src = this._getWeatherIconSource(data.DayTime, data.Weather);
+                this._lastWeatherCondition = data.Weather;
+                this._lastdaylightCondition = data.DayTime;
+            }
         }
         
     }

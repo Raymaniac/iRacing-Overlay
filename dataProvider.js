@@ -1,7 +1,5 @@
 const irsdk = require("node-irsdk");
 const fs = require("fs");
-const { time } = require("console");
-const { env } = require("process");
 
 class SDKWrapper {
 
@@ -17,6 +15,8 @@ class SDKWrapper {
 
     _driverCarIndex = 0;
     _runningDrivers = 0;
+
+    _sessionFlags = [];
 
     _debugData = {
         sessionInfo: null,
@@ -104,6 +104,14 @@ class SDKWrapper {
         this._timingData.LapsLeft = telemetry.values.SessionLapsRemain;
         this._timingData.TimeLeft = telemetry.values.SessionTimeRemain;
 
+        this._positionData.IsOnPitroad = telemetry.values.OnPitRoad;
+        this._sessionData.IsOnPitroad = telemetry.values.OnPitRoad;
+        this._positionData.IsInGarage = !telemetry.values.IsOnTrack;
+        this._sessionData.IsInGarage = !telemetry.values.IsOnTrack;
+
+        this._timingData.FlagStatus = telemetry.values.SessionFlags[0]; // First flag should be main priority
+        this._updateSessionFlags(telemetry.values.SessionFlags);
+
         let driverPosition = telemetry.values.CarIdxPosition[this._driverCarIndex];
         if(driverPosition === 0) {
             let driverKeys = Object.keys(telemetry.values.CarIdxPosition);
@@ -134,7 +142,9 @@ class SDKWrapper {
                 Weather: this._sessionData.CurrentWeather,
                 DayTime: this._sessionData.CurrentDayTime,
                 AirTemp: this._sessionData.AirTemp,
-                TrackTemp: this._sessionData.TrackTemp
+                TrackTemp: this._sessionData.TrackTemp,
+                IsOnPitroad: this._sessionData.IsOnPitroad,
+                IsInGarage: this._sessionData.IsInGarage
             };
         } else {
             return {
@@ -145,7 +155,9 @@ class SDKWrapper {
                 Weather: "None",
                 DayTime: "Afternoon",
                 AirTemp: "24°C",
-                TrackTemp: "34°C"
+                TrackTemp: "34°C",
+                IsOnPitroad: true,
+                IsInGarage: true
             };
         }
     }
@@ -160,7 +172,9 @@ class SDKWrapper {
                 Class : this._positionData.Class,
                 ClassColor : this._positionData.ClassColor,
                 Position : this._positionData.Position,
-                IsTeamEvent: this._positionData.IsTeamRace
+                IsTeamEvent: this._positionData.IsTeamRace,
+                IsOnPitroad: this._positionData.IsOnPitroad,
+                IsInGarage: this._positionData.IsInGarage
             };
         }else {
             return {
@@ -171,7 +185,9 @@ class SDKWrapper {
                 Class : "n.a",
                 ClassColor : "n.a",
                 Position : 0,
-                IsTeamRace : false
+                IsTeamRace : false,
+                IsOnPitroad: true,
+                IsInGarage: true
             };
         }
     }
@@ -181,23 +197,27 @@ class SDKWrapper {
             if(timingType === "LAP") {
                 return {
                     SessionAmount: this._timingData.LapsTotal,
-                    AmountLeft: this._timingData.LapsLeft
+                    AmountLeft: this._timingData.LapsLeft,
+                    FlagStatus: this._timingData.FlagStatus
                 };
             } else if(timingType === "TIME") {
                 return {
                     SessionAmount: this._getTimeString(this._timingData.TimeTotal),
-                    AmountLeft: this._getTimeString(this._timingData.TimeLeft)
+                    AmountLeft: this._getTimeString(this._timingData.TimeLeft),
+                    FlagStatus: this._timingData.FlagStatus
                 };
             }else {
                 return {
                     SessionAmount: "--",
-                    AmountLeft: "--"
+                    AmountLeft: "--",
+                    FlagStatus: this._timingData.FlagStatus
                 };
             }
         }else {
             return {
                 SessionAmount: "--",
-                AmountLeft: "--"
+                AmountLeft: "--",
+                FlagStatus: this._timingData.FlagStatus
             };
         }
     }
@@ -219,11 +239,37 @@ class SDKWrapper {
         }
 
         let minutes = Math.floor(secFloat / 60);
-        let hours = Number((secFloat / 60 / 60).toFixed(0));
+        let hours = Math.floor(Number((secFloat / 60 / 60)));
         let seconds = secFloat - ( minutes * 60 );
         seconds = Number(seconds.toFixed(0));
         return `${
             hours < 10 ? "0" + hours : hours}:${ minutes < 10 ? "0" + minutes : minutes }:${ seconds < 10 ? "0" + seconds : seconds }h`;
+    }
+
+    _updateSessionFlags(sessionFlags) {
+        let hasChanged = false;
+
+        if(this._sessionFlags.length === 0) {
+            hasChanged = true;
+            this._sessionFlags = sessionFlags;
+        }else {
+            sessionFlags.forEach(flag => {
+                let found = false;
+                this._sessionFlags.forEach(savedFlag => {
+                    if(savedFlag === flag) {
+                        found = true;
+                    }
+                });
+                if(!found) {
+                    this._sessionFlags.push(flag);
+                    hasChanged = true;
+                }
+            });
+        }
+
+        if (hasChanged) {
+            console.log(this._sessionFlags);
+        }
     }
 }
 
@@ -237,6 +283,8 @@ class SessionData {
     CurrentDayTime = "Not Night";
     TrackTemp = "";         // from "TrackSurfaceTemp"
     AirTemp = "";           // from "TrackAirTemp"
+    IsOnPitroad = true;
+    IsInGarage = true;
 }
 
 class PositionData {
@@ -248,6 +296,8 @@ class PositionData {
     ClassColor = "";
     Position = 1;
     IsTeamRace = false;
+    IsOnPitroad = true;
+    IsInGarage = true;
     Drivers = [];
 }
 
@@ -256,6 +306,7 @@ class TimingData {
     LapsLeft = "";
     TimeTotal = "";
     TimeLeft = "";
+    FlagStatus = "";
 }
 
 class ClassHandler {
