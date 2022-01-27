@@ -2,6 +2,9 @@ const bodyParser = require("body-parser");
 const bodyParserErrorHandler = require('express-body-parser-error-handler')
 const express = require("express");
 const app = express();
+
+const defaultPort = 8080;
+
 require("dotenv").config();
 const sdk = require("./dataProvider.js")
 const wrapper = new sdk.SDKWrapper();
@@ -45,6 +48,6 @@ app.get("/debug/telemetry", (req, res) => {
 
 
 // ====== Run App
-app.listen(process.env.PORT, () => {
-    console.log(`Listening to port ${process.env.PORT}`);
+app.listen(process.env.PORT || defaultPort, () => {
+    console.log(`Listening to port ${process.env.PORT || defaultPort}`);
 });

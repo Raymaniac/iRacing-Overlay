@@ -31,7 +31,7 @@ class SDKWrapper {
         ClassHandler.loadData("./config/Classes.json");
         SkiesHandler.loadData("./config/Skies.json");
         if(this._instance === null) {
-            this._instance = irsdk.init({sessionInfoUpdateInterval: process.env.SESSION_INFO_UPDATE_INTERVAL});
+            this._instance = irsdk.init({sessionInfoUpdateInterval: process.env.SESSION_INFO_UPDATE_INTERVAL || 1000});
             this._instance.on("SessionInfo", this._onSessionData.bind(this));
             this._instance.on("Telemetry", this._onTelemetryData.bind(this));
             this._instance.on("Connected", () => this._isConnnected = true );
@@ -78,7 +78,7 @@ class SDKWrapper {
 
             if(driver.CarIdx === this._driverCarIndex) {
                 if(driver.UserID === this._replaceID && process.env.REPLACE_DRIVER_NAME === "true") {
-                    this._positionData.CurrentDriver = process.env.PLAYER_REPLACEMENT_NAME;
+                    this._positionData.CurrentDriver = process.env.PLAYER_REPLACEMENT_NAME || driver.UserName;
                 } else {
                     this._positionData.CurrentDriver = driver.UserName;
                 }
@@ -334,7 +334,7 @@ class ClassHandler {
         try {
             return this._data[classID].Color;
         }catch {
-            return process.env.CLASS_DEFAULT_COLOR;
+            return process.env.CLASS_DEFAULT_COLOR || "#fff";
         }
     }
 }
