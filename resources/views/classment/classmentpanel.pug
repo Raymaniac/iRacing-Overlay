@@ -5,10 +5,18 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         style
+            include ../style.css
             include ./classment.css
         script
             include ./controller.js
     body
-        div#classment-panel
-            span(class="panel-header") Classment
-            div#positions-panel
+        div#classment-panel(style='width: ' + PanelWidth + 'px;')
+            div(class="panel-header background-dark")
+                span(class="font-bright font-bold") Classment
+            each val in PositionIDs
+                div(id=val class="position-item")
+                    div(class="position-number background-bright")
+                        span(id=val + '-position' class="font-dark font-bold")
+                    div(id=val + '-class' class="class-color-panel")
+                    div(class="short-text background-dark")
+                        span(id=val + '-text' class="font-bright driver-label")

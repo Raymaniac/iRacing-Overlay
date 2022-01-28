@@ -1,9 +1,13 @@
-class Controller {
-    _positionPanel;
-    _cars = [];
+class WidgetController {
+    
+    _intervall = null;
+    _request = null;
+    
+    _displayCount = 10;
+    _items = [];
 
     constructor() {
-        this._positionPanel = document.getElementById("positions-panel");
+        this._initialize();
         this._fetchUpdate();
     }
 
@@ -23,65 +27,67 @@ class Controller {
             };
         }
         
-        this._request.open("GET", location.origin + "/data/classment")
+        this._request.open("GET", location.origin + "/data/classment?displayCount=" + this._displayCount)
         this._request.setRequestHeader('Content-Type', 'application/json')
         this._request.send();
         
     }
 
     _displayValues(data) {
-        if(this._cars.length === 0) {
-            this._fillCarTable(data);
-        }else {
-
+        if(data.classment.length > 0) {
+            data.classment.forEach(car => {
+                let item = this._items[car.Position];
+                item.updateClassColor(car.ClassColor);
+                item.updateDisplayText(car.DisplayText);
+                if(car.DisplayText.length > 3) {
+                    item.setTeamMode(true);
+                }else {
+                    item.setTeamMode(false);
+                }
+            });
         }
     }
 
-    _fillCarTable(drivers) {
-        drivers.forEach(driver => {
-            let positionItem = new PositionItem(driver.CarID, driver.ClassColor, driver.ShortName);
-            positionItem
-            this._cars.push(positionItem);
-        });
+    _initialize() {
+        // URL Query Param = displayCount default auf 10
+        let queryString = window.location.search;
+        let params = new URLSearchParams(queryString);
+        this._displayCount = (Number)(params.get("displayCount") || 10);
+
+        for(let i = 1; i <= this._displayCount; i++) {
+            this._items.push(new PositionItem(i, true));
+        }
     }
 }
 
 class PositionItem {
-    _visualElement;
-    _positionElement;
-    _classColorElement;
-    _driverShortElement;
-    _carId;
-    constructor(carID, classColor, driverShort) {
-        this._carID = carID;
-        // Create main element
-        this._visualElement = document.createElement("div");
-        this._visualElement.classList.add("position-item");
-        // Create position element
-        this._positionElement = document.createElement("div");
-        this._positionElement.classList.add("position-number");
-        this._visualElement.appendChild(this._positionElement);
+    _positionNumberElement;
+    _classColorLabel;
+    _displayTextElement;
 
-        this._classColorElement = document.createElement("div");
-        this._classColorElement.classList.add("class-color-panel");
-        this._classColorElement.style.backgroundColor = classColor;
-        this._visualElement.appendChild(this._classColorElement);
-
-        this._driverShortElement = document.createElement("div");
-        this._driverShortElement.classList.add("driver-short");
-        this._driverShortElement.innerText = driverShort;
-        this._visualElement.appendChild(this._driverShortElement);
-
+    constructor(index, isTeamMode) {
+        this._positionNumberElement = document.getElementById("pos-" + index + "-position");
+        this._positionNumberElement.innerText = index;
+        this._classColorLabel = document.getElementById("pos-" + index + "-class");
+        this._displayTextElement = document.getElementById("pos-" + index + "-text");
+        this._displayTextElement.innerText = "Kabort Blue " + index;
+        this.setTeamMode(isTeamMode);
     }
 
-    getVisualElement() { return this._visualElement; }
-
-    updateVisualPosition(position) {
-        this._positionElement.innerText = position;
+    updateClassColor(colorStr) {
+        this._classColorLabel.style.backgroundColor = colorStr;
     }
 
-    updateDriver(driverShort) {
-        this._driverShortElement.innerText = driverShort; 
+    updateDisplayText(text) {
+        this._displayTextElement.innerText = text;
+    }
+
+    setTeamMode(isTeamMode) {
+        if(isTeamMode) {
+            this._displayTextElement.classList.replace("driver-label", "team-label");
+        } else {
+            this._displayTextElement.classList.replace("team-label", "driver-label");
+        }
     }
 }
 

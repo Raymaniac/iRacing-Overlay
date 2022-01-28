@@ -32,6 +32,14 @@ html {
 }
 
 .font-l {
+    font-size: 14px;
+}
+
+.font-xl {
+    font-size: 17px;
+}
+
+.font-xxl {
     font-size: 20px;
 }
 

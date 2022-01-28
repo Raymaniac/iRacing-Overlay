@@ -1,6 +1,6 @@
 const irsdk = require("node-irsdk");
 const fs = require("fs");
-const classmentApi = require("./classmentAPI.js");
+const ClassmentApi = require("./classmentAPI.js").Classment;
 const moment = require("moment");
 
 class SDKWrapper {
@@ -30,6 +30,7 @@ class SDKWrapper {
     init() {
         ClassHandler.loadData("./config/Classes.json");
         SkiesHandler.loadData("./config/Skies.json");
+        this._classment = new ClassmentApi();
         if(this._instance === null) {
             this._instance = irsdk.init({sessionInfoUpdateInterval: process.env.SESSION_INFO_UPDATE_INTERVAL || 1000});
             this._instance.on("SessionInfo", this._onSessionData.bind(this));
@@ -86,7 +87,7 @@ class SDKWrapper {
                 if(driver.TeamID !== 0) {
                     this._positionData.TeamName = driver.TeamName;
                 }else {
-                    this._positionData.TeamName = "Personal"
+                    this._positionData.TeamName = "My Team"
                 }
 
                 this._positionData.CarNumber = driver.CarNumber;
@@ -97,6 +98,8 @@ class SDKWrapper {
                 //break;
             }
         }
+
+        this._classment.updateCars(sessionData.data.DriverInfo.Drivers);
 
         this._runningDrivers = highestCarId;
     }
@@ -138,6 +141,16 @@ class SDKWrapper {
         }else {
             this._positionData.Position = driverPosition;
         }
+
+        // Update Classment
+        telemetry.values.CarIdxPosition.forEach((carPosition, carID ) => {
+            if(carPosition !== 0) {
+                this._classment.updatePosition(carID, carPosition);
+                this._classment.updateClassPosition(carID, telemetry.values.CarIdxClassPosition[carID]);
+            }
+        });
+
+        this._classment.updatePosition(this._driverCarIndex, this._positionData.Position);
     }
 
     getWeatherInfo() {
@@ -231,6 +244,10 @@ class SDKWrapper {
         }
     }
 
+    getClassmentApi() { return this._classment; }
+
+    getOwnCarID() { return this._driverCarIndex; };
+
     getSessionInfoDebug() {
         return this._debugData.sessionInfo;
     }
@@ -318,8 +335,10 @@ class ClassHandler {
     static _data = null;
 
     static loadData(path) {
+        console.log("Loading class data...")
         let stringData = fs.readFileSync(path);
         this._data = JSON.parse(stringData);
+        console.log("Done!");
     }
 
     static getClassName(classID) {
@@ -343,8 +362,10 @@ class SkiesHandler {
     static _data = null;
 
     static loadData(path) {
+        console.log("Loading skies...")
         let stringData = fs.readFileSync(path);
         this._data = JSON.parse(stringData);
+        console.log("Done!");
     }
 
     static getSkyName(skyID) {

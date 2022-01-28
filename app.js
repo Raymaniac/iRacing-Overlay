@@ -39,7 +39,7 @@ app.get("/data/timing", timingController.handleDataRequest.bind(timingController
 
 const classmentController = new ClassmentController(wrapper);
 app.get("/widgets/classment", classmentController.handleUIRequest.bind(classmentController));
-app.get("data/classment", classmentController.handleDataRequest.bind(classmentController));
+app.get("/data/classment", classmentController.handleDataRequest.bind(classmentController));
 
 // ====== Some Debugging information
 app.get("/debug/session", (req, res) => {
