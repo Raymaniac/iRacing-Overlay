@@ -27,6 +27,8 @@ class SDKWrapper {
         telemetry: null
     };
 
+    _externalTelemetryCallback = null;
+
     init() {
         ClassHandler.loadData("./config/Classes.json");
         SkiesHandler.loadData("./config/Skies.json");
@@ -151,6 +153,11 @@ class SDKWrapper {
         });
 
         this._classment.updatePosition(this._driverCarIndex, this._positionData.Position);
+
+        // Handle external callbacks
+        if(this._externalTelemetryCallback !== null) {
+            this._externalTelemetryCallback(telemetry);
+        }
     }
 
     getWeatherInfo() {
@@ -254,6 +261,10 @@ class SDKWrapper {
 
     getTelemetryDebug() {
         return this._debugData.telemetry;
+    }
+
+    addTelemetryCallback(callbackFunction) {
+        this._externalTelemetryCallback = callbackFunction;
     }
 
     _getTimeString(timeSec) {
