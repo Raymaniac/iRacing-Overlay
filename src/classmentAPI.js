@@ -29,12 +29,16 @@ class Classment {
 
     updatePosition(carID, position) {
         let car = this._carMap.get(carID);
-        car.Position = position;
+        if(car) {
+            car.Position = position;
+        }
     }
 
     updateClassPosition(carID, position) {
         let car = this._carMap.get(carID);
-        car.ClassPosition = position;
+        if(car) {
+            car.ClassPosition = position;
+        }
     }
 
     getNumberOfClasses() { return this._classes.length; }

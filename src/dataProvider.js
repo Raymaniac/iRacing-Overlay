@@ -253,6 +253,8 @@ class SDKWrapper {
 
     getClassmentApi() { return this._classment; }
 
+    getClassColor(classID) { return ClassHandler.getClassColor(classID); }
+
     getOwnCarID() { return this._driverCarIndex; };
 
     getSessionInfoDebug() {
